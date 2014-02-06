@@ -15,7 +15,7 @@ data SlimOutput = NoOutput | EscapedOutput | UnescapedOutput
 data Slim = Tag String [SlimAttr] [Slim] | Code SlimOutput String [Slim] | Text String | Comment Bool String
 	deriving (Show)
 
-data SlimAttr = Attr String String
+data SlimAttr = Attr String (Either String String) -- left string, right code, for now
 	deriving (Show)
 
 data SlimConfig = SlimConfig {
@@ -61,12 +61,18 @@ attr' allowAlone = do
 	key <- some alphaNum
 	val <- if allowAlone then optional valParser else fmap Just valParser
 	inlineSpaces
-	return $ Attr key (fromMaybe key val)
+	return $ Attr key (fromMaybe (Left key) val)
 	where
-	valParser = inlineSpaces *> string "=" *> inlineSpaces *>
-		(quotedString "\"" <|> quotedString "'")
+	valParser = inlineSpaces *> string "=" *> inlineSpaces *> (
+			fmap Left (quotedString "\"" "\"" <|> quotedString "'" "'") <|>
+			fmap Right (quotedString "(" ")" <|> many1 alphaNum)
+		)
 
-quotedString q = string q *> many (noneOf q) <* string q
+quotedString o c = concat <$> (string o *> many (some (noneOf (o++c)) <|> nested) <* string c)
+	where
+	nested
+		| o == c = pure ""
+		| otherwise = (\s -> o ++ s ++ c) <$> quotedString o c
 
 code = (\sigil txt -> Code (slimOutputSigil sigil) txt) <$>
 	(string "-" <|> try (string "==") <|> string "=") <*>

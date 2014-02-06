@@ -2,8 +2,6 @@ TODO:
 
 http://rdoc.info/gems/slim/file/test/literate/TESTS.md
 
-attributes can contain code -- need parens for spaces in code
-
 output code on same line as tag (space before = also allowed)
 tag text content on same line
 
