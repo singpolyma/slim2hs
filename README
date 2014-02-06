@@ -1,0 +1,27 @@
+TODO:
+
+http://rdoc.info/gems/slim/file/test/literate/TESTS.md
+
+html attribute parser (MUST QUOTE FOR NON CODE quoted and unquoted ' and ") -- spaces around equals
+attributes can contain code -- need parens for spaces in code
+output code on same line as tag (space before = also allowed)
+tag text content on same line
+
+wrapped attributes (configurable) -- line folding -- with wrap, omit assignment for bool attr
+configurable tag/attribute shortcuts
+
+splat allows hashrocket-style attributes -- hmm? -- oh... actually allows arbitrary code which must be a hash -- hmm -- with tag key this allows creation of the tag dynamically as well
+
+Inline HTML
+Test escaping in text blocks
+Interpolation / #{{ unescaped interpolation }}
+Text block -- copy over extra spaces instead of folding them? spec says yes, but seems not relevant for html?  unless pre...
+look into single quote -- appends a whitespace?
+\ or , line folding for code blocks
+=> and =< are code output with whitespace append/prepend... (also for ==)
+/[...] conditional comment
+End line with / to mark tag as self-closing
+tag>, tag<, tag<> for leading/trailing whitespace?  test what it does
+inline tags with `tag:`
+
+think about embedded engines vs tags?
