@@ -8,7 +8,7 @@ output code on same line as tag (space before = also allowed)
 tag text content on same line
 
 wrapped attributes (configurable) -- line folding -- with wrap, omit assignment for bool attr
-configurable tag/attribute shortcuts
+better shortcuts parser (compound shortcuts)
 
 splat allows hashrocket-style attributes -- hmm? -- oh... actually allows arbitrary code which must be a hash -- hmm -- with tag key this allows creation of the tag dynamically as well
 
