@@ -12,7 +12,7 @@ import Control.Monad.Trans.Reader
 data SlimOutput = NoOutput | EscapedOutput | UnescapedOutput
 	deriving (Show)
 
-data Slim = Tag String [SlimAttr] [Slim] | Code SlimOutput String [Slim] | Text String | Comment Bool String
+data Slim = Tag [String] [SlimAttr] [Slim] | Code SlimOutput String [Slim] | Text String | Comment Bool String
 	deriving (Show)
 
 data SlimAttr = Attr String (Either String String) -- left string, right code, for now
@@ -51,8 +51,13 @@ inlineSpaces = skipMany (satisfy isInlineSpace) <?> "inline white space"
 inlineSpace = satisfy isInlineSpace <?> "inline white space character"
 isInlineSpace c = c /= '\n' && isSpace c
 
-tag config@(SlimConfig {shortcuts = s}) = (\x y a c cs -> Tag (maybe y (:y) x) a (maybe cs (:cs) c)) <$>
-	optional (oneOf s) <*> some alphaNum <*> attr config <*> inlineContent
+tag config = (\ts a c cs -> Tag ts a (maybe cs (:cs) c)) <$>
+	tagAndShortcuts config <*> attr config <*> inlineContent
+
+tagAndShortcuts (SlimConfig {shortcuts = s}) = do
+	(:) <$> (some alphaNum <|> shortcut) <*> many shortcut
+	where
+	shortcut = (:) <$> oneOf s <*> some alphaNum
 
 inlineContent = do
 	inlineSpaces
