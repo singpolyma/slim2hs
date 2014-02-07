@@ -8,7 +8,6 @@ Inline HTML
 Interpolation / #{{ unescaped interpolation }} -- really need to fully parse these so " can be in "#{""}"
 
 \ or , line folding for code blocks
-Test escaping in text blocks
 
 => and =< are code output with whitespace append/prepend... (also for ==)
 tag>, tag<, tag<> for leading/trailing whitespace?  test what it does

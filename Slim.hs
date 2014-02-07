@@ -33,8 +33,8 @@ parser' config =
 	textBlock (\s -> Text (s ++ " ")) "'" <|>
 	textBlock comment "/" <|>
 	withBlock ($) (code <* lineSepSpace True) (parser config) <|>
-	try (selfCloseTag config) <|>
-	withBlock ($) (tag config <* lineSepSpace True) (parser config) <|>
+	try (withBlock ($) (tag config <* lineSepSpace True) (parser config)) <|>
+	selfCloseTag config <|>
 	(lineSepSpace True *> pure (Comment False "")) -- HACK
 
 comment ('!':txt) = Comment True (dropWhile isSpace txt)
@@ -73,8 +73,10 @@ inlineContent = do
 	output <- optional (slimOutputSigil <$> (try (string "==") <|> string "="))
 	inlineSpaces
 	case output of
-		Just typ -> (\x -> Just $ Code typ x []) <$> some (noneOf "\n")
-		Nothing -> optional (Text <$> some (noneOf "\n"))
+		Just typ -> (\x -> Just $ Code typ x []) <$> txt
+		Nothing -> optional (Text <$> txt)
+	where
+	txt = (:) <$> noneOf "/\n" <*> many (noneOf "\n")
 
 attr (SlimConfig {attributeWrap = wrap}) = (inlineSpaces *>) $ withPos $ foldr (<|>) (many $ try $ attr' False) $
 	map (\(o,c) -> pure id <-/> string [o] <-/> inlineSpaces <*/> attr' True <-/> string [c]) wrap
