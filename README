@@ -9,7 +9,6 @@ Interpolation / #{{ unescaped interpolation }} -- really need to fully parse the
 Inline HTML
 Test escaping in text blocks
 Text block -- copy over extra spaces instead of folding them? spec says yes, but seems not relevant for html?  unless pre...
-look into single quote -- appends a whitespace?
 \ or , line folding for code blocks
 => and =< are code output with whitespace append/prepend... (also for ==)
 /[...] conditional comment

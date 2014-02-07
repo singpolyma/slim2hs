@@ -30,6 +30,7 @@ parser config = checkIndent >> parser' config
 
 parser' config =
 	textBlock Text "|" <|>
+	textBlock (\s -> Text (s ++ " ")) "'" <|>
 	textBlock comment "/" <|>
 	withBlock ($) (code <* lineSepSpace True) (parser config) <|>
 	withBlock ($) (tag config <* lineSepSpace True) (parser config) <|>
