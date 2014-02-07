@@ -51,10 +51,18 @@ inlineSpaces = skipMany (satisfy isInlineSpace) <?> "inline white space"
 inlineSpace = satisfy isInlineSpace <?> "inline white space character"
 isInlineSpace c = c /= '\n' && isSpace c
 
-tag config@(SlimConfig {shortcuts = s}) =
-	(\x y c -> Tag (maybe y (:y) x) c) <$> optional (oneOf s) <*> some alphaNum <*> attr config
+tag config@(SlimConfig {shortcuts = s}) = (\x y a c cs -> Tag (maybe y (:y) x) a (maybe cs (:cs) c)) <$>
+	optional (oneOf s) <*> some alphaNum <*> attr config <*> inlineContent
 
-attr (SlimConfig {attributeWrap = wrap}) = (inlineSpaces *>) $ withPos $ foldr (<|>) (many $ attr' False) $
+inlineContent = do
+	inlineSpaces
+	output <- optional (slimOutputSigil <$> (try (string "==") <|> string "="))
+	inlineSpaces
+	case output of
+		Just typ -> (\x -> Just $ Code typ x []) <$> some (noneOf "\n")
+		Nothing -> optional (Text <$> some (noneOf "\n"))
+
+attr (SlimConfig {attributeWrap = wrap}) = (inlineSpaces *>) $ withPos $ foldr (<|>) (many $ try $ attr' False) $
 	map (\(o,c) -> pure id <-/> string [o] <-/> inlineSpaces <*/> attr' True <-/> string [c]) wrap
 
 attr' allowAlone = do
