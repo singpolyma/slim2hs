@@ -2,10 +2,9 @@ TODO:
 
 http://rdoc.info/gems/slim/file/test/literate/TESTS.md
 
-Inline HTML
 /[...] conditional comment
 
-Interpolation / #{{ unescaped interpolation }} -- really need to fully parse these so " can be in "#{""}"
+Interpolation / #{{ unescaped interpolation }} -- really need to fully parse these so " can be in "#{""}" attributes and in inline html and in text blocks
 
 \ or , line folding for code blocks
 

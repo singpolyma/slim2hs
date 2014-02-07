@@ -12,7 +12,7 @@ import Control.Monad.Trans.Reader
 data SlimOutput = NoOutput | EscapedOutput | UnescapedOutput
 	deriving (Show)
 
-data Slim = Tag [String] [SlimAttr] [Slim] | SelfCloseTag [String] [SlimAttr] | Code SlimOutput String [Slim] | Text String | Comment Bool String
+data Slim = Tag [String] [SlimAttr] [Slim] | SelfCloseTag [String] [SlimAttr] | Code SlimOutput String [Slim] | Text String | Comment Bool String | Html String [Slim]
 	deriving (Show)
 
 data SlimAttr = Attr String (Either String String) -- left string, right code, for now
@@ -32,6 +32,7 @@ parser' config =
 	textBlock Text "|" <|>
 	textBlock (\s -> Text (s ++ " ")) "'" <|>
 	textBlock comment "/" <|>
+	withBlock ($) (htmlTag <* lineSepSpace True) (parser config) <|>
 	withBlock ($) (code <* lineSepSpace True) (parser config) <|>
 	try (withBlock ($) (tag config <* lineSepSpace True) (parser config)) <|>
 	selfCloseTag config <|>
@@ -39,6 +40,10 @@ parser' config =
 
 comment ('!':txt) = Comment True (dropWhile isSpace txt)
 comment txt = Comment False txt
+
+htmlTag = (\s c cs -> Html s (maybe cs (:cs) c)) <$>
+	((++) <$> ((++) <$> string "<" <*> some (noneOf ">")) <*> string ">") <*>
+	(inlineSpaces *> inlineContent)
 
 -- does folding
 textBlock cons sigil = withPos $ (string sigil *> inlineSpaces *> pure (cons . concat)) <*/> textBlockLine
