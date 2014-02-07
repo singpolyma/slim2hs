@@ -2,18 +2,20 @@ TODO:
 
 http://rdoc.info/gems/slim/file/test/literate/TESTS.md
 
-splat allows hashrocket-style attributes -- hmm? -- oh... actually allows arbitrary code which must be a hash -- hmm -- with tag key this allows creation of the tag dynamically as well
+Inline HTML
+/[...] conditional comment
 
 Interpolation / #{{ unescaped interpolation }} -- really need to fully parse these so " can be in "#{""}"
 
-Inline HTML
-Test escaping in text blocks
-Text block -- copy over extra spaces instead of folding them? spec says yes, but seems not relevant for html?  unless pre...
 \ or , line folding for code blocks
-=> and =< are code output with whitespace append/prepend... (also for ==)
-/[...] conditional comment
-End line with / to mark tag as self-closing
-tag>, tag<, tag<> for leading/trailing whitespace?  test what it does
-inline tags with `tag:`
+Test escaping in text blocks
 
+=> and =< are code output with whitespace append/prepend... (also for ==)
+tag>, tag<, tag<> for leading/trailing whitespace?  test what it does
+
+inline tags with `tag:`
 think about embedded engines vs tags?
+
+Text block -- copy over extra spaces instead of folding them? spec says yes, but seems not relevant for html?  unless pre...
+splat allows hashrocket-style attributes -- hmm? -- oh... actually allows arbitrary code which must be a hash -- hmm -- with tag key this allows creation of the tag dynamically as well
+idea: extension?  Allow boolean on self-closing tags

@@ -12,7 +12,7 @@ import Control.Monad.Trans.Reader
 data SlimOutput = NoOutput | EscapedOutput | UnescapedOutput
 	deriving (Show)
 
-data Slim = Tag [String] [SlimAttr] [Slim] | Code SlimOutput String [Slim] | Text String | Comment Bool String
+data Slim = Tag [String] [SlimAttr] [Slim] | SelfCloseTag [String] [SlimAttr] | Code SlimOutput String [Slim] | Text String | Comment Bool String
 	deriving (Show)
 
 data SlimAttr = Attr String (Either String String) -- left string, right code, for now
@@ -33,6 +33,7 @@ parser' config =
 	textBlock (\s -> Text (s ++ " ")) "'" <|>
 	textBlock comment "/" <|>
 	withBlock ($) (code <* lineSepSpace True) (parser config) <|>
+	try (selfCloseTag config) <|>
 	withBlock ($) (tag config <* lineSepSpace True) (parser config) <|>
 	(lineSepSpace True *> pure (Comment False "")) -- HACK
 
@@ -51,6 +52,13 @@ lineSepSpace reqNewline = inlineSpaces *> ((,) <$> nl <*> optional inlineSpace) 
 inlineSpaces = skipMany (satisfy isInlineSpace) <?> "inline white space"
 inlineSpace = satisfy isInlineSpace <?> "inline white space character"
 isInlineSpace c = c /= '\n' && isSpace c
+
+selfCloseTag config = do
+	(ts, as) <- (,) <$> tagAndShortcuts config <*> attr config
+	inlineSpaces
+	string "/"
+	lineSepSpace True
+	return $ SelfCloseTag ts as
 
 tag config = (\ts a c cs -> Tag ts a (maybe cs (:cs) c)) <$>
 	tagAndShortcuts config <*> attr config <*> inlineContent
