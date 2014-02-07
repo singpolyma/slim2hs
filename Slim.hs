@@ -71,7 +71,7 @@ attr' allowAlone = do
 quotedString o c = concat <$> (string o *> many (some (noneOf (o++c)) <|> nested) <* string c)
 	where
 	nested
-		| o == c = pure ""
+		| o == c = empty
 		| otherwise = (\s -> o ++ s ++ c) <$> quotedString o c
 
 code = (\sigil txt -> Code (slimOutputSigil sigil) txt) <$>
